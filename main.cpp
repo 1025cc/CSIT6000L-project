@@ -18,6 +18,7 @@
 
 #include "TimeStepper.hpp"
 #include "simpleSystem.h"
+#include "pendulumSystem.h"
 
 using namespace std;
 
@@ -34,8 +35,8 @@ namespace
   {
     // seed the random number generator with the current time
     srand( time( NULL ) );
-    system = new SimpleSystem();
-    timeStepper = new RK4();		
+    system = new PendulumSystem(4);
+    timeStepper = new RK4();
   }
 
   // Take a step forward for the particle shower

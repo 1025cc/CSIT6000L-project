@@ -4,7 +4,7 @@
 #ifdef _WIN32
 #include "GL/freeglut.h"
 #else
-#include <GL/glut.h>
+#include <GLUT/glut.h>
 #endif
 
 #include <vecmath.h>
