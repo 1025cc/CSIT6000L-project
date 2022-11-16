@@ -18,8 +18,7 @@
 
 #include "TimeStepper.hpp"
 #include "simpleSystem.h"
-#include "pendulumSystem.h"
-
+#include "ClothSystem.h"
 using namespace std;
 
 // Globals here.
@@ -33,9 +32,10 @@ namespace
   ///TODO: read argv here. set timestepper , step size etc
   void initSystem(int argc, char * argv[])
   {
+
     // seed the random number generator with the current time
     srand( time( NULL ) );
-    system = new PendulumSystem(4);
+    system = new ClothSystem(15,15);
     timeStepper = new RK4();
   }
 
@@ -60,8 +60,7 @@ namespace
     GLfloat floorColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
     
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, particleColor);
-    
-    glutSolidSphere(0.1f,10.0f,10.0f);
+
     
     system->draw();
     
@@ -111,6 +110,8 @@ namespace
             camera.SetCenter( Vector3f::ZERO );
             break;
         }
+        case 's':
+
         default:
             cout << "Unhandled key press " << key << "." << endl;        
         }
