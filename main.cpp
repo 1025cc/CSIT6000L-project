@@ -36,7 +36,7 @@ namespace
 
     // seed the random number generator with the current time
     srand( time( NULL ) );
-    system = new ClothSystem(15,15);
+    system = new ClothSystem(15,15,0);
     timeStepper = new RK4();
   }
 
@@ -112,8 +112,17 @@ namespace
             break;
         }
         case 's':
-            move = !move;
-            break;
+		move = !move;
+		cout << "change move" << endl;
+		break;
+	case 'r':
+		system = new ClothSystem(15, 15, 0);
+		cout << "reset" << endl;
+		break;
+	case 'f':
+		system = new ClothSystem(15, 15, 1);
+		cout << "cloth fall" << endl;
+		break;
         default:
             cout << "Unhandled key press " << key << "." << endl;        
         }
