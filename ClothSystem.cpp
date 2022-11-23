@@ -1,9 +1,10 @@
 #include "ClothSystem.h"
 
-ClothSystem::ClothSystem(int width, int height)
+ClothSystem::ClothSystem(int width, int height, int systemState)
 {
     this->width = width;
     this->height = height;
+    this->systemState = systemState;
     this->m_numParticles = width * height;
     //no motion
     Vector3f velocity(0,0,0);
@@ -49,11 +50,13 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
         for(int j = 0;j<width;j++){
             int curIndex = indexOf(i,j);
             //fix 2 particles - hang the cloth
-            if((i == 0 && j == 0) || (i == 0 && j == width-1)){
-                f.push_back(Vector3f(0.0f));
-                f.push_back(Vector3f(0.0f));
-                continue;
-            }
+	if (systemState != 1) {
+	    if((i == 0 && j == 0) || (i == 0 && j == width-1)){
+		f.push_back(Vector3f(0.0f));
+		f.push_back(Vector3f(0.0f));
+		continue;
+	    }
+	}
             Vector3f position = state[2*curIndex];
             Vector3f velocity = state[2*curIndex+1];
             //drag force
@@ -157,6 +160,24 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 
 void ClothSystem::draw()
 {
+	//draw the ball
+	glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
+	glEnable(GL_COLOR_MATERIAL);
+	glColor3f(1.0f, 1.0f, 0.0f);
+	Vector3f ball = Vector3f(0.125f * width, -0.25f * height, -0.1f);
+	float rad = 0.5f * particleDistance* width;
+	float epsilon = 0.125f;
+	glPushMatrix();
+	glTranslatef(ball.x(), ball.y(), ball.z());
+	glutSolidSphere(rad, 20.0f, 20.0f);
+	glPopMatrix();
+	glDisable(GL_COLOR_MATERIAL);
+	for (int n = 0; n < m_numParticles; n++) {
+		if ((m_vVecState[2 * n] - ball).abs() <= (rad + epsilon)) {
+			m_vVecState[2 * n] = (ball + (rad + epsilon) * (m_vVecState[2 * n] - ball).normalized());
+		}
+	}
+	
     for(int i = 0;i<height;i++){
         for(int j = 0;j<width;j++){
             //draw particle
@@ -167,14 +188,14 @@ void ClothSystem::draw()
             //not in the last col
             if(j<width-1){
                 Vector3f rightPos(m_vVecState[2* indexOf(i,j+1)]);
-                glVertex3f(pos[0],pos[1],pos[2]);
-                glVertex3f(rightPos[0],rightPos[1],rightPos[2]);
+                glVertex3f(pos[0], pos[1]< groundHeight ? groundHeight : pos[1], pos[2]);
+		glVertex3f(rightPos[0], rightPos[1] < groundHeight ? groundHeight : rightPos[1], rightPos[2]);
             }
             //not in the last row
             if(i<height-1){
                 Vector3f bottomPos(m_vVecState[2* indexOf(i+1,j)]);
-                glVertex3f(pos[0],pos[1],pos[2]);
-                glVertex3f(bottomPos[0],bottomPos[1],bottomPos[2]);
+                glVertex3f(pos[0], pos[1] < groundHeight ? groundHeight : pos[1], pos[2]);
+		glVertex3f(bottomPos[0], bottomPos[1] < groundHeight ? groundHeight : bottomPos[1], bottomPos[2]);
             }
             glEnd();
         }
