@@ -185,6 +185,7 @@ void ClothSystem::draw()
             //draw structural springs
             glLineWidth(2);
             glBegin(GL_LINES);
+		float groundHeight = -0.25f * height;
             //not in the last col
             if(j<width-1){
                 Vector3f rightPos(m_vVecState[2* indexOf(i,j+1)]);
