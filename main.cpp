@@ -25,8 +25,9 @@ using namespace std;
 namespace
 {
 
-    ParticleSystem *system;
+    ClothSystem *system;
     TimeStepper * timeStepper;
+    bool move = false;
 
   // initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
@@ -111,7 +112,8 @@ namespace
             break;
         }
         case 's':
-
+            move = !move;
+            break;
         default:
             cout << "Unhandled key press " << key << "." << endl;        
         }
@@ -263,6 +265,9 @@ namespace
 
     void timerFunc(int t)
     {
+        if(move){
+            system->move();
+        }
         stepSystem();
 
         glutPostRedisplay();
@@ -273,7 +278,7 @@ namespace
     
 
     
-    
+
 }
 
 // Main routine.

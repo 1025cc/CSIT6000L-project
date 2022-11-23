@@ -25,6 +25,20 @@ int ClothSystem::indexOf(int i, int j) {
     return i * width + j;
 }
 
+void ClothSystem::move() {
+    int pin1 = indexOf(0,0);
+    int pin2 = indexOf(0,width-1);
+    float z = m_vVecState[2*pin1].z();
+    //limit the moving range
+    if(z>moveUpperBound){
+        moveDir = Vector3f(0,0,-1);
+    }else if(z<moveLowerBound){
+        moveDir = Vector3f(0,0,1);
+    }
+    m_vVecState[2 * pin1] += moveDir*Vector3f(0,0,0.04);
+    m_vVecState[2 * pin2] += moveDir*Vector3f(0,0,0.04);
+}
+
 // for a given state, evaluate f(X,t)
 vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 {
@@ -33,18 +47,13 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
     Vector3f fGravity = mass * gravity;
     for(int i = 0;i<height;i++){
         for(int j = 0;j<width;j++){
-            //fix 2 particles - hang the cloth
-            if(i == 0 && j == 0){
-                f.push_back(Vector3f(0.0f));
-                f.push_back(Vector3f(0.0f));
-                continue;
-            }
-            if(i == 0 && j == width-1){
-                f.push_back(Vector3f(0.0f));
-                f.push_back(Vector3f(0.0f));
-                continue;
-            }
             int curIndex = indexOf(i,j);
+            //fix 2 particles - hang the cloth
+            if((i == 0 && j == 0) || (i == 0 && j == width-1)){
+                f.push_back(Vector3f(0.0f));
+                f.push_back(Vector3f(0.0f));
+                continue;
+            }
             Vector3f position = state[2*curIndex];
             Vector3f velocity = state[2*curIndex+1];
             //drag force

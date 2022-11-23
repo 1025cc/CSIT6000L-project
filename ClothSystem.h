@@ -20,6 +20,8 @@ public:
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	int indexOf(int i,int j);
 	void draw();
+    void move();
+
 
 protected:
     //cloth size(particle nums)
@@ -37,6 +39,11 @@ protected:
     float shearRestLength = particleDistance * sqrt(2);
     float flexStiffness =4.0f;
     float flexRestLength = particleDistance*2;
+    //move
+    float moveUpperBound = 2;
+    float moveLowerBound = -2;
+    Vector3f moveDir = (0,0,1);
+
 };
 
 
