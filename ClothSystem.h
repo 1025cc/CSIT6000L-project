@@ -16,7 +16,7 @@ class ClothSystem: public ParticleSystem
 ///ADD MORE FUNCTION AND FIELDS HERE
 public:
 	ClothSystem();
-    ClothSystem(int width,int height);
+    ClothSystem(int width,int height, int systemState);
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	int indexOf(int i,int j);
 	void draw();
@@ -27,6 +27,7 @@ protected:
     //cloth size(particle nums)
     int width = 8;
     int height = 8;
+    int systemState = 0;//systemState: 0->fixed particles 1->the cloth falls 
     //initial distance between particles
     float particleDistance = 0.3f;
     //some physical parameters
