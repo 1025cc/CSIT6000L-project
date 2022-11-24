@@ -34,3 +34,5 @@
 #Clion
 .idea
 *.iml
+
+Makefile
