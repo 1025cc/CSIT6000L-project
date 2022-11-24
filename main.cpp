@@ -33,9 +33,9 @@ namespace
     //fixed increment/decrement
     float posChange = 0.5f;
     //first value of light position. default:1.0
-    float pos1 = 1.0f;
+    float pos1 = 0.0f;
     //second value of light positon. default:1.0
-    float pos2 = 1.0f;
+    float pos2 = 7.0f;
     // initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
   void initSystem(int argc, char * argv[])
@@ -43,7 +43,7 @@ namespace
 
     // seed the random number generator with the current time
     srand( time( NULL ) );
-    system = new ClothSystem(15,15,0);
+    system = new ClothSystem(20,20,0);
     timeStepper = new RK4();
   }
 
@@ -59,28 +59,71 @@ namespace
     }
   }
 
+  void drawRoom(){
+      GLfloat floorColor[] = {131.0/255.0, 175.0/255.0, 155.0/255.0, 1.0f};
+
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, floorColor);
+      glPushMatrix();
+      glTranslatef(0.0f,-15.0f,0.0f);
+      glScaled(30.0f,0.01f,30.0f);
+      glutSolidCube(1);
+      glPopMatrix();
+      glPushMatrix();
+      glTranslatef(0.0f,15.0f,0.0f);
+      glScaled(30.0f,0.01f,30.0f);
+      glutSolidCube(1);
+      glPopMatrix();
+
+      glPushMatrix();
+      glRotatef(90,1,0,0);
+      glTranslatef(10.0f,-14.0f,0.0f);
+      glScaled(15.f,0.01f,30.0f);
+      glutSolidCube(1);
+      glPopMatrix();
+      glPushMatrix();
+      glRotatef(90,1,0,0);
+      glTranslatef(-10.0f,-14.0f,0.0f);
+      glScaled(14.3f,0.01f,30.0f);
+      glutSolidCube(1);
+      glPopMatrix();
+      glPushMatrix();
+      glRotatef(90,1,0,0);
+      glTranslatef(0.f,-14.f,9.5f);
+      glScaled(30.f,0.01f,14.f);
+      glutSolidCube(1);
+      glPopMatrix();
+      glPushMatrix();
+      glRotatef(90,1,0,0);
+      glTranslatef(0.f,-14.f,-10.f);
+      glScaled(30.f,0.01f,10.f);
+      glutSolidCube(1);
+      glPopMatrix();
+
+      glPushMatrix();
+      glRotatef(90,0,0,1);
+      glTranslatef(0.0f,-15.0f,0.0f);
+      glScaled(30.0f,0.01f,30.0f);
+      glutSolidCube(1);
+      glPopMatrix();
+      glPushMatrix();
+      glRotatef(90,0,0,1);
+      glTranslatef(0.0f,15.0f,0.0f);
+      glScaled(30.0f,0.01f,30.0f);
+      glutSolidCube(1);
+      glPopMatrix();
+  }
   // Draw the current particle positions
   void drawSystem()
   {
     
     // Base material colors (they don't change)
     GLfloat particleColor[] = {0.4f, 0.7f, 1.0f, 1.0f};
-    GLfloat floorColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
+
       GLfloat windowColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, particleColor);
-
-    
     system->draw();
-    
-    
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, floorColor);
-    glPushMatrix();
-    glTranslatef(0.0f,-5.0f,0.0f);
-    glScaled(50.0f,0.01f,50.0f);
-    glutSolidCube(1);
-    glPopMatrix();
-
+    drawRoom();
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, windowColor);
 
       // Define specular color and shininess
@@ -93,13 +136,15 @@ namespace
 
       glPushMatrix();
       glRotatef(-90,0,1,0);
-      glTranslatef(-0.55,1.4,0.17);
+      glTranslatef(-14,1.4,0.17);
       glScaled(0.13,0.1,0.13);
-      //draw model
-      //model->Draw();
       mesh.draw();
       glPopMatrix();
+
+
+
   }
+
         
 
     //-------------------------------------------------------------------
@@ -142,11 +187,11 @@ namespace
 		cout << "change move" << endl;
 		break;
 	case 'r':
-		system = new ClothSystem(15, 15, 0);
+		system = new ClothSystem(20, 20, 0);
 		cout << "reset" << endl;
 		break;
 	case 'f':
-		system = new ClothSystem(15, 15, 1);
+		system = new ClothSystem(20, 20, 1);
 		cout << "cloth fall" << endl;
 		break;
         default:
@@ -273,13 +318,12 @@ namespace
         // Light color (RGBA)
         GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
         // Light position
-        GLfloat Lt0pos[] = {pos1, pos2, 5.0f, 1.0f};
+        GLfloat Lt0pos[] = {pos1, pos2, -20.f, 1.0f};
 
         glLightfv(GL_LIGHT0, GL_DIFFUSE, Lt0diff);
         glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
 
         glLoadMatrixf( camera.viewMatrix() );
-
         // THIS IS WHERE THE DRAW CODE GOES.
 
         drawSystem();
@@ -354,7 +398,7 @@ int main( int argc, char* argv[] )
     
     camera.SetDimensions( 600, 600 );
 
-    camera.SetDistance( 20 );
+    camera.SetDistance( 30 );
     camera.SetCenter( Vector3f::ZERO );
     
     glutCreateWindow("Assignment 4");

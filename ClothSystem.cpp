@@ -16,7 +16,7 @@ ClothSystem::ClothSystem(int width, int height, int systemState)
     }
     //no motion
     Vector3f velocity(0,0,0);
-    Vector3f originPos(0,2,0);
+    Vector3f originPos(-3,5,-13.1);
     for(int i = 0;i<height;i++){
         for(int j = 0;j<width;j++){
             Vector3f position(j*particleDistance,-i*particleDistance,0);
@@ -46,7 +46,7 @@ void ClothSystem::move() {
             }else if(z<moveLowerBound){
                 moveDir = Vector3f(0,0,1);
             }
-            m_vVecState[2 * pin] += moveDir*Vector3f(0,0,0.04);
+            m_vVecState[2 * pin] += moveDir*Vector3f(0,0,0.06);
         }
     }
 }

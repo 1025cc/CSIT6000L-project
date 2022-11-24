@@ -55,7 +55,6 @@ public:
 
     //draw the current mesh.
     void draw();
-    void parse();
 };
 
 

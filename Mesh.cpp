@@ -17,6 +17,10 @@ void Mesh::load(const char* filename )
     std::ifstream ifile;
     ifile.open(filename,std::ios::in);
     char buffer[MAX_BUFFER_SIZE];
+/*    float xmin;
+    float xmax;
+    float ymin;
+    float ymax;*/
     while(ifile.getline(buffer,MAX_BUFFER_SIZE)){
         //change char to stringstream
         std::stringstream ss(buffer);
@@ -28,6 +32,10 @@ void Mesh::load(const char* filename )
             Vector3f v;
             //store the values separately
             ss >> v[0] >> v[1] >> v[2];
+/*            xmax = v[0]>xmax?v[0]:xmax;
+            xmin = v[0]<xmin?v[0]:xmin;
+            ymax = v[1]>ymax?v[1]:ymax;
+            ymin = v[1]<ymin?v[1]:ymin;*/
             vecv.push_back(v);
         } else if("vn" == s){
             Vector3f vn;
@@ -56,6 +64,7 @@ void Mesh::load(const char* filename )
             vecf.push_back(vf);
         }
     }
+    //std::cout<<xmax<<"," << xmin << "," <<ymax<<","<<ymin<<std::endl;
 }
 void Mesh::draw(){
     for(int i = 0;i< vecf.size();i++){
@@ -65,7 +74,7 @@ void Mesh::draw(){
             unsigned v2 = vecf[i][2];
             unsigned t2 = vecf[i][3];
             unsigned v3 = vecf[i][4];
-            unsigned t4 = vecf[i][5];
+            unsigned t3 = vecf[i][5];
             //compute the normal by taking the cross product of the edges
             Vector3f edge1 = vecv[v2-1]-vecv[v1-1];
             Vector3f edge2 = vecv[v3-1]-vecv[v1-1];
@@ -76,6 +85,22 @@ void Mesh::draw(){
             glNormal3d(normal.x(),normal.y(),normal.z());
             glVertex3d(vecv[v2-1][0], vecv[v2-1][1], vecv[v2-1][2]);
             glNormal3d(normal.x(),normal.y(),normal.z());
+            glVertex3d(vecv[v3-1][0], vecv[v3-1][1], vecv[v3-1][2]);
+            glEnd();
+        }
+        if(vecf[i].size() == 9){
+            unsigned v1 = vecf[i][0];
+            unsigned n1 = vecf[i][2];
+            unsigned v2 = vecf[i][3];
+            unsigned n2 = vecf[i][5];
+            unsigned v3 = vecf[i][6];
+            unsigned n3 = vecf[i][8];
+            glBegin(GL_TRIANGLE_STRIP);
+            glNormal3d(vecn[n1-1][0], vecn[n1-1][1], vecn[n1-1][2]);
+            glVertex3d(vecv[v1-1][0], vecv[v1-1][1], vecv[v1-1][2]);
+            glNormal3d(vecn[n2-1][0], vecn[n2-1][1], vecn[n2-1][2]);
+            glVertex3d(vecv[v2-1][0], vecv[v2-1][1], vecv[v2-1][2]);
+            glNormal3d(vecn[n3-1][0], vecn[n3-1][1], vecn[n3-1][2]);
             glVertex3d(vecv[v3-1][0], vecv[v3-1][1], vecv[v3-1][2]);
             glEnd();
         }
