@@ -16,9 +16,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 ///TODO: include more headers if necessary
-#include "Model.h"
 #include "TimeStepper.hpp"
 #include "ClothSystem.h"
+#include "Mesh.h"
 using namespace std;
 
 // Globals here.
@@ -28,7 +28,7 @@ namespace
     ClothSystem *system;
     TimeStepper * timeStepper;
     bool move = false;
-    Model* model;
+    Mesh mesh;
     //These are variables to change the light
     //fixed increment/decrement
     float posChange = 0.5f;
@@ -96,7 +96,8 @@ namespace
       glTranslatef(-0.55,1.4,0.17);
       glScaled(0.13,0.1,0.13);
       //draw model
-      model->Draw();
+      //model->Draw();
+      mesh.draw();
       glPopMatrix();
   }
         
@@ -363,7 +364,7 @@ int main( int argc, char* argv[] )
 
     // Setup particle system
     initSystem(argc,argv);
-    model =  new Model("window.obj");
+    mesh.load("window.obj");
     // Set up callback functions for key presses
     glutKeyboardFunc(keyboardFunc); // Handles "normal" ascii symbols
     glutSpecialFunc(specialFunc);   // Handles "special" keyboard keys

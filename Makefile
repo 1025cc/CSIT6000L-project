@@ -1,12 +1,13 @@
 UNAME := $(shell uname)
 INCFLAGS  = -I vecmath/include
+INCFLAGS  += -I /opt/homebrew/include
 # INCFLAGS += -I /usr/include/GL
 
 FRAMEWORKS = -framework Glut
 FRAMEWORKS += -framework OpenGL
 
-LINKFLAGS = -L. -lRK4 -lglut -lGL # -lGLU
-CFLAGS    = -O2 -Wall -ansi -DSOLN
+LINKFLAGS = -L /opt/homebrew/lib -lassimp
+CFLAGS    = -g -Wall -ansi -DSOLN
 CC        = g++
 SRCS      = $(wildcard *.cpp)
 SRCS     += $(wildcard vecmath/src/*.cpp)
