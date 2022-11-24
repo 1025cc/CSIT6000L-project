@@ -44,6 +44,7 @@ protected:
     float moveUpperBound = 2;
     float moveLowerBound = -2;
     Vector3f moveDir = (0,0,1);
+    vector<bool> fixed_points;
 
 };
 

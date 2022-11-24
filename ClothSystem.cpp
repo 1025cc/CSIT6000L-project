@@ -6,6 +6,14 @@ ClothSystem::ClothSystem(int width, int height, int systemState)
     this->height = height;
     this->systemState = systemState;
     this->m_numParticles = width * height;
+    this->fixed_points = vector<bool>(width);
+    //fix points
+    fixed_points[0] = 1;
+    fixed_points[width-1] = 1;
+    int step = width/4;
+    for(int i = step;i<width-1;i +=step){
+        fixed_points[i] = 1;
+    }
     //no motion
     Vector3f velocity(0,0,0);
     Vector3f originPos(0,2,0);
@@ -27,17 +35,20 @@ int ClothSystem::indexOf(int i, int j) {
 }
 
 void ClothSystem::move() {
-    int pin1 = indexOf(0,0);
-    int pin2 = indexOf(0,width-1);
-    float z = m_vVecState[2*pin1].z();
-    //limit the moving range
-    if(z>moveUpperBound){
-        moveDir = Vector3f(0,0,-1);
-    }else if(z<moveLowerBound){
-        moveDir = Vector3f(0,0,1);
+    for(int j = 0;j<fixed_points.size();j++){
+        bool fixed = fixed_points[j];
+        if(fixed){
+            int pin = indexOf(0,j);
+            float z = m_vVecState[2*pin].z();
+            //limit the moving range
+            if(z>moveUpperBound){
+                moveDir = Vector3f(0,0,-1);
+            }else if(z<moveLowerBound){
+                moveDir = Vector3f(0,0,1);
+            }
+            m_vVecState[2 * pin] += moveDir*Vector3f(0,0,0.04);
+        }
     }
-    m_vVecState[2 * pin1] += moveDir*Vector3f(0,0,0.04);
-    m_vVecState[2 * pin2] += moveDir*Vector3f(0,0,0.04);
 }
 
 // for a given state, evaluate f(X,t)
@@ -49,14 +60,14 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
     for(int i = 0;i<height;i++){
         for(int j = 0;j<width;j++){
             int curIndex = indexOf(i,j);
-            //fix 2 particles - hang the cloth
-	if (systemState != 1) {
-	    if((i == 0 && j == 0) || (i == 0 && j == width-1)){
-		f.push_back(Vector3f(0.0f));
-		f.push_back(Vector3f(0.0f));
-		continue;
-	    }
-	}
+            //fix n particles - hang the cloth
+            if (systemState != 1) {
+                if(i == 0 && fixed_points[j]){
+                    f.push_back(Vector3f(0.0f));
+                    f.push_back(Vector3f(0.0f));
+                    continue;
+                }
+            }
             Vector3f position = state[2*curIndex];
             Vector3f velocity = state[2*curIndex+1];
             //drag force

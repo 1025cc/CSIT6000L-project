@@ -13,11 +13,11 @@
 // --------------------------------
 #include <vecmath.h>
 #include "camera.h"
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 ///TODO: include more headers if necessary
-
+#include "Model.h"
 #include "TimeStepper.hpp"
-#include "simpleSystem.h"
 #include "ClothSystem.h"
 using namespace std;
 
@@ -28,8 +28,15 @@ namespace
     ClothSystem *system;
     TimeStepper * timeStepper;
     bool move = false;
-
-  // initialize your particle systems
+    Model* model;
+    //These are variables to change the light
+    //fixed increment/decrement
+    float posChange = 0.5f;
+    //first value of light position. default:1.0
+    float pos1 = 1.0f;
+    //second value of light positon. default:1.0
+    float pos2 = 1.0f;
+    // initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
   void initSystem(int argc, char * argv[])
   {
@@ -59,7 +66,8 @@ namespace
     // Base material colors (they don't change)
     GLfloat particleColor[] = {0.4f, 0.7f, 1.0f, 1.0f};
     GLfloat floorColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
-    
+      GLfloat windowColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, particleColor);
 
     
@@ -72,7 +80,24 @@ namespace
     glScaled(50.0f,0.01f,50.0f);
     glutSolidCube(1);
     glPopMatrix();
-    
+
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, windowColor);
+
+      // Define specular color and shininess
+      GLfloat specColor[] = {1.0, 1.0, 1.0, 1.0};
+      GLfloat shininess[] = {100.0};
+
+      // Note that the specular color and shininess can stay constant
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specColor);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+
+      glPushMatrix();
+      glRotatef(-90,0,1,0);
+      glTranslatef(-0.55,1.4,0.17);
+      glScaled(0.13,0.1,0.13);
+      //draw model
+      model->Draw();
+      glPopMatrix();
   }
         
 
@@ -124,7 +149,7 @@ namespace
 		cout << "cloth fall" << endl;
 		break;
         default:
-            cout << "Unhandled key press " << key << "." << endl;        
+            cout << "Unhandled key press " << key << "." << endl;
         }
 
         glutPostRedisplay();
@@ -136,9 +161,30 @@ namespace
     {
         switch ( key )
         {
-
+            case GLUT_KEY_UP:
+                // add code to change light position
+                pos2 += posChange;
+                cout << "Press up arrow to move the light up." << endl;
+                break;
+            case GLUT_KEY_DOWN:
+                // add code to change light position
+                pos2 -= posChange;
+                cout << "Press down arrow to move the light down." << endl;
+                break;
+            case GLUT_KEY_LEFT:
+                // add code to change light position
+                pos1 -= posChange;
+                cout << "Press left arrow to move the light to the left." << endl;
+                break;
+            case GLUT_KEY_RIGHT:
+                // add code to change light position
+                pos1 += posChange;
+                cout << "Press right arrow to move the light to the right." << endl;
+                break;
         }
-        //glutPostRedisplay();
+
+        // this will refresh the screen so that the user sees the light position
+        glutPostRedisplay();
     }
 
     //  Called when mouse button is pressed.
@@ -221,11 +267,13 @@ namespace
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glMatrixMode( GL_MODELVIEW );  
-        glLoadIdentity();              
+        glLoadIdentity();
 
         // Light color (RGBA)
         GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
-        GLfloat Lt0pos[] = {3.0,3.0,5.0,1.0};
+        // Light position
+        GLfloat Lt0pos[] = {pos1, pos2, 5.0f, 1.0f};
+
         glLightfv(GL_LIGHT0, GL_DIFFUSE, Lt0diff);
         glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
 
@@ -301,11 +349,11 @@ int main( int argc, char* argv[] )
 
     // Initial parameters for window position and size
     glutInitWindowPosition( 60, 60 );
-    glutInitWindowSize( 600, 600 );
+    glutInitWindowSize( 800, 800 );
     
     camera.SetDimensions( 600, 600 );
 
-    camera.SetDistance( 10 );
+    camera.SetDistance( 20 );
     camera.SetCenter( Vector3f::ZERO );
     
     glutCreateWindow("Assignment 4");
@@ -315,7 +363,7 @@ int main( int argc, char* argv[] )
 
     // Setup particle system
     initSystem(argc,argv);
-
+    model =  new Model("window.obj");
     // Set up callback functions for key presses
     glutKeyboardFunc(keyboardFunc); // Handles "normal" ascii symbols
     glutSpecialFunc(specialFunc);   // Handles "special" keyboard keys
