@@ -25,181 +25,219 @@ using namespace std;
 namespace
 {
 
-    ClothSystem *system;
-    TimeStepper * timeStepper;
-    bool move = false;
-    Mesh mesh;
-    //These are variables to change the light
-    //fixed increment/decrement
-    float posChange = 0.5f;
-    //first value of light position. default:1.0
-    float pos1 = 0.0f;
-    //second value of light positon. default:1.0
-    float pos2 = 7.0f;
-    // initialize your particle systems
+	ClothSystem *system;
+	TimeStepper * timeStepper;
+	bool move = false;
+	Mesh mesh;
+	//These are variables to change the light
+	//fixed increment/decrement
+	float posChange = 0.5f;
+	//first value of light position. default:1.0
+	float pos1 = 0.0f;
+	//second value of light positon. default:1.0
+	float pos2 = 7.0f;
+	int systemState[] = {0,0,0,0};
+	// initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
-  void initSystem(int argc, char * argv[])
-  {
+	void initSystem(int argc, char * argv[])
+	{
 
-    // seed the random number generator with the current time
-    srand( time( NULL ) );
-    system = new ClothSystem(20,20,0);
-    timeStepper = new RK4();
-  }
+		// seed the random number generator with the current time
+		srand(time(NULL));
+		system = new ClothSystem(20, 20, systemState);
+		timeStepper = new RK4();
+	}
 
-  // Take a step forward for the particle shower
-  ///TODO: Optional. modify this function to display various particle systems
-  ///and switch between different timeSteppers
-  void stepSystem()
-  {
-      ///TODO The stepsize should change according to commandline arguments
-    const float h = 0.04f;
-    if(timeStepper!=0){
-      timeStepper->takeStep(system,h);
-    }
-  }
+	// Take a step forward for the particle shower
+	///TODO: Optional. modify this function to display various particle systems
+	///and switch between different timeSteppers
+	void stepSystem()
+	{
+		///TODO The stepsize should change according to commandline arguments
+		const float h = 0.04f;
+		if (timeStepper != 0) {
+			timeStepper->takeStep(system, h);
+		}
+	}
 
-  void drawRoom(){
-      GLfloat floorColor[] = {131.0/255.0, 175.0/255.0, 155.0/255.0, 1.0f};
+	void drawRoom() {
+		GLfloat floorColor[] = { 131.0 / 255.0, 175.0 / 255.0, 155.0 / 255.0, 1.0f };
 
-      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, floorColor);
-      glPushMatrix();
-      glTranslatef(0.0f,-15.0f,0.0f);
-      glScaled(30.0f,0.01f,30.0f);
-      glutSolidCube(1);
-      glPopMatrix();
-      glPushMatrix();
-      glTranslatef(0.0f,15.0f,0.0f);
-      glScaled(30.0f,0.01f,30.0f);
-      glutSolidCube(1);
-      glPopMatrix();
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, floorColor);
+		glPushMatrix();
+		glTranslatef(0.0f, -15.0f, 0.0f);
+		glScaled(30.0f, 0.01f, 30.0f);
+		glutSolidCube(1);
+		glPopMatrix();
+		glPushMatrix();
+		glTranslatef(0.0f, 15.0f, 0.0f);
+		glScaled(30.0f, 0.01f, 30.0f);
+		glutSolidCube(1);
+		glPopMatrix();
 
-      glPushMatrix();
-      glRotatef(90,1,0,0);
-      glTranslatef(10.0f,-14.0f,0.0f);
-      glScaled(15.f,0.01f,30.0f);
-      glutSolidCube(1);
-      glPopMatrix();
-      glPushMatrix();
-      glRotatef(90,1,0,0);
-      glTranslatef(-10.0f,-14.0f,0.0f);
-      glScaled(14.3f,0.01f,30.0f);
-      glutSolidCube(1);
-      glPopMatrix();
-      glPushMatrix();
-      glRotatef(90,1,0,0);
-      glTranslatef(0.f,-14.f,9.5f);
-      glScaled(30.f,0.01f,14.f);
-      glutSolidCube(1);
-      glPopMatrix();
-      glPushMatrix();
-      glRotatef(90,1,0,0);
-      glTranslatef(0.f,-14.f,-10.f);
-      glScaled(30.f,0.01f,10.f);
-      glutSolidCube(1);
-      glPopMatrix();
+		glPushMatrix();
+		glRotatef(90, 1, 0, 0);
+		glTranslatef(10.0f, -14.0f, 0.0f);
+		glScaled(15.f, 0.01f, 30.0f);
+		glutSolidCube(1);
+		glPopMatrix();
+		glPushMatrix();
+		glRotatef(90, 1, 0, 0);
+		glTranslatef(-10.0f, -14.0f, 0.0f);
+		glScaled(14.3f, 0.01f, 30.0f);
+		glutSolidCube(1);
+		glPopMatrix();
+		glPushMatrix();
+		glRotatef(90, 1, 0, 0);
+		glTranslatef(0.f, -14.f, 9.5f);
+		glScaled(30.f, 0.01f, 14.f);
+		glutSolidCube(1);
+		glPopMatrix();
+		glPushMatrix();
+		glRotatef(90, 1, 0, 0);
+		glTranslatef(0.f, -14.f, -10.f);
+		glScaled(30.f, 0.01f, 10.f);
+		glutSolidCube(1);
+		glPopMatrix();
 
-      glPushMatrix();
-      glRotatef(90,0,0,1);
-      glTranslatef(0.0f,-15.0f,0.0f);
-      glScaled(30.0f,0.01f,30.0f);
-      glutSolidCube(1);
-      glPopMatrix();
-      glPushMatrix();
-      glRotatef(90,0,0,1);
-      glTranslatef(0.0f,15.0f,0.0f);
-      glScaled(30.0f,0.01f,30.0f);
-      glutSolidCube(1);
-      glPopMatrix();
-  }
-  // Draw the current particle positions
-  void drawSystem()
-  {
-    
-    // Base material colors (they don't change)
-    GLfloat particleColor[] = {0.4f, 0.7f, 1.0f, 1.0f};
+		glPushMatrix();
+		glRotatef(90, 0, 0, 1);
+		glTranslatef(0.0f, -15.0f, 0.0f);
+		glScaled(30.0f, 0.01f, 30.0f);
+		glutSolidCube(1);
+		glPopMatrix();
+		glPushMatrix();
+		glRotatef(90, 0, 0, 1);
+		glTranslatef(0.0f, 15.0f, 0.0f);
+		glScaled(30.0f, 0.01f, 30.0f);
+		glutSolidCube(1);
+		glPopMatrix();
+	}
+	// Draw the current particle positions
+	void drawSystem()
+	{
 
-      GLfloat windowColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		// Base material colors (they don't change)
+		GLfloat particleColor[] = { 0.4f, 0.7f, 1.0f, 1.0f };
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, particleColor);
-    system->draw();
-    drawRoom();
-      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, windowColor);
+		GLfloat windowColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-      // Define specular color and shininess
-      GLfloat specColor[] = {1.0, 1.0, 1.0, 1.0};
-      GLfloat shininess[] = {100.0};
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, particleColor);
+		system->draw();
+		drawRoom();
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, windowColor);
 
-      // Note that the specular color and shininess can stay constant
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specColor);
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+		// Define specular color and shininess
+		GLfloat specColor[] = { 1.0, 1.0, 1.0, 1.0 };
+		GLfloat shininess[] = { 100.0 };
 
-      glPushMatrix();
-      glRotatef(-90,0,1,0);
-      glTranslatef(-14,1.4,0.17);
-      glScaled(0.13,0.1,0.13);
-      mesh.draw();
-      glPopMatrix();
+		// Note that the specular color and shininess can stay constant
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specColor);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+
+		glPushMatrix();
+		glRotatef(-90, 0, 1, 0);
+		glTranslatef(-14, 1.4, 0.17);
+		glScaled(0.13, 0.1, 0.13);
+		mesh.draw();
+		glPopMatrix();
 
 
 
-  }
+	}
 
-        
 
-    //-------------------------------------------------------------------
-    
-        
-    // This is the camera
-    Camera camera;
 
-    // These are state variables for the UI
-    bool g_mousePressed = false;
+	//-------------------------------------------------------------------
 
-    // Declarations of functions whose implementations occur later.
-    void arcballRotation(int endX, int endY);
-    void keyboardFunc( unsigned char key, int x, int y);
-    void specialFunc( int key, int x, int y );
-    void mouseFunc(int button, int state, int x, int y);
-    void motionFunc(int x, int y);
-    void reshapeFunc(int w, int h);
-    void drawScene(void);
-    void initRendering();
 
-    // This function is called whenever a "Normal" key press is
-    // received.
-    void keyboardFunc( unsigned char key, int x, int y )
-    {
-        switch ( key )
-        {
-        case 27: // Escape key
-            exit(0);
-            break;
-        case ' ':
-        {
-            Matrix4f eye = Matrix4f::identity();
-            camera.SetRotation( eye );
-            camera.SetCenter( Vector3f::ZERO );
-            break;
-        }
-        case 's':
-		move = !move;
-		cout << "change move" << endl;
-		break;
-	case 'r':
-		system = new ClothSystem(20, 20, 0);
-		cout << "reset" << endl;
-		break;
-	case 'f':
-		system = new ClothSystem(20, 20, 1);
-		cout << "cloth fall" << endl;
-		break;
-        default:
-            cout << "Unhandled key press " << key << "." << endl;
-        }
+	// This is the camera
+	Camera camera;
 
-        glutPostRedisplay();
-    }
+	// These are state variables for the UI
+	bool g_mousePressed = false;
+
+	// Declarations of functions whose implementations occur later.
+	void arcballRotation(int endX, int endY);
+	void keyboardFunc(unsigned char key, int x, int y);
+	void specialFunc(int key, int x, int y);
+	void mouseFunc(int button, int state, int x, int y);
+	void motionFunc(int x, int y);
+	void reshapeFunc(int w, int h);
+	void drawScene(void);
+	void initRendering();
+
+	// This function is called whenever a "Normal" key press is
+	// received.
+	void keyboardFunc(unsigned char key, int x, int y)
+	{
+		switch (key)
+		{
+		case 27: // Escape key
+			exit(0);
+			break;
+		case ' ':
+		{
+			Matrix4f eye = Matrix4f::identity();
+			camera.SetRotation(eye);
+			camera.SetCenter(Vector3f::ZERO);
+			break;
+		}
+		case 's':
+			move = !move;
+			cout << "change move" << endl;
+			break;
+		case 'r':
+			systemState[0] = 0;
+			system = new ClothSystem(20, 20, systemState);
+			cout << "reset" << endl;
+			break;
+		case 'f':
+			systemState[0] = 1;
+			system = new ClothSystem(20, 20, systemState);
+			cout << "cloth fall" << endl;
+			break;
+		case 'g':
+			systemState[0] = 2;
+			system = new ClothSystem(20, 20, systemState);
+			cout << "add friction" << endl;
+			break;
+		case '1':
+			systemState[3]++;
+			system = new ClothSystem(20, 20, systemState);
+			cout << "add z" << endl;
+			break;
+		case '2':
+			systemState[3]--;
+			system = new ClothSystem(20, 20, systemState);
+			cout << "minus z" << endl;
+			break;
+		case '3':
+			systemState[2]++;
+			system = new ClothSystem(20, 20, systemState);
+			cout << "add y" << endl;
+			break;
+		case '4':
+			systemState[2]--;
+			system = new ClothSystem(20, 20, systemState);
+			cout << "minus y" << endl;
+			break;
+		case '5':
+			systemState[1]++;
+			system = new ClothSystem(20, 20, systemState);
+			cout << "add x" << endl;
+			break;
+		case '6':
+			systemState[1]--;
+			system = new ClothSystem(20, 20, systemState);
+			cout << "minus x" << endl;
+			break;
+		default:
+			cout << "Unhandled key press " << key << "." << endl;
+		}
+
+		glutPostRedisplay();
+	}
 
     // This function is called whenever a "Special" key press is
     // received.  Right now, it's handling the arrow keys.
