@@ -42,11 +42,11 @@ namespace
 	void initSystem(int argc, char * argv[])
 	{
 
-		// seed the random number generator with the current time
-		srand(time(NULL));
-		system = new ClothSystem(20, 20, systemState);
-		timeStepper = new RK4();
-	}
+    // seed the random number generator with the current time
+    srand( time( NULL ) );
+    system = new ClothSystem(20,20,0);
+    timeStepper = new RKF45();
+  }
 
 	// Take a step forward for the particle shower
 	///TODO: Optional. modify this function to display various particle systems
