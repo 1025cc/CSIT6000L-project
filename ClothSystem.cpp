@@ -97,7 +97,7 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 			int curIndex = indexOf(i, j);
 			//fix 2 particles - hang the cloth
 			if (systemState == 0) {
-				if ((i == 0 && j == 0) || (i == 0 && j == width - 1)) {
+				if (i == 0 && fixed_points[j]) {
 					f.push_back(Vector3f(0.0f));
 					f.push_back(Vector3f(0.0f));
 					continue;
