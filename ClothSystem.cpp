@@ -8,6 +8,7 @@ ClothSystem::ClothSystem(int width, int height, int systemState[])
 	this->systemState = systemState[0];
 	this->m_numParticles = width * height;
 	this->fixed_points = vector<bool>(width);
+    this->normals = vector<Vector3f>(m_numParticles);
 	//fix points
 	fixed_points[0] = 1;
 	fixed_points[width - 1] = 1;
@@ -30,6 +31,16 @@ ClothSystem::ClothSystem(int width, int height, int systemState[])
 			m_vVecState.push_back(velocity);
 		}
 	}
+    // Define cloth faces
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+            if (i > 0 && j > 0) {
+                // counter-clockwise winding for front-facing rendering
+                faces.push_back(Vector3f(indexOf(i - 1, j - 1), indexOf(i - 1, j), indexOf(i, j - 1)));
+                faces.push_back(Vector3f(indexOf(i, j), indexOf(i, j - 1), indexOf(i - 1, j)));
+            }
+        }
+    }
 }
 
 //helper function
@@ -210,7 +221,35 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 
 
 }
+Vector3f computeTriangleNormal(Vector3f v1, Vector3f v2, Vector3f v3) {
+    // v1, v2, v3 in counter-clockwise order, output the normal facing to the camera
+    return Vector3f::cross(v2 - v1, v3 - v1).normalized();
+}
+void ClothSystem::computeVertexNormals() {
+    // Compute the normal vector (facing to the camera) of each vertex, by its adjcent triangles
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+            Vector3f normal(0, 0, 0);
 
+            if (i > 0 && j > 0) {
+                normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j - 1)], m_vVecState[2 * indexOf(i - 1, j)], m_vVecState[2 * indexOf(i, j)]);
+            }
+            if (i < width - 1 && j > 0) {
+                normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j - 1)], m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i + 1, j - 1)]);
+                normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i + 1, j)], m_vVecState[2 * indexOf(i + 1, j - 1)]);
+            }
+            if (i > 0 && j < height - 1) {
+                normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i - 1, j)], m_vVecState[2 * indexOf(i - 1, j + 1)]);
+                normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i - 1, j + 1)], m_vVecState[2 * indexOf(i, j + 1)]);
+            }
+            if (i < width - 1 && j < height - 1) {
+                normal += computeTriangleNormal(m_vVecState[2 * indexOf(i + 1, j)], m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i, j + 1)]);
+            }
+
+            normals[indexOf(i, j)] = normal.normalized();
+        }
+    }
+}
 void ClothSystem::draw()
 {
 	//draw the ball
@@ -255,5 +294,36 @@ void ClothSystem::draw()
 		}
 	}
 
+    computeVertexNormals();
+    for (size_t i = 0; i < this->faces.size(); i++) {
+        Vector3f face = faces[i];
 
+        // counter-clockwise order
+        Vector3f v1 = m_vVecState[2*((int)face[0])];
+        Vector3f v2 = m_vVecState[2*((int)face[1])];
+        Vector3f v3 = m_vVecState[2*((int)face[2])];
+        Vector3f v1_n = this->normals[(int)face[0]];
+        Vector3f v2_n = this->normals[(int)face[1]];
+        Vector3f v3_n = this->normals[(int)face[2]];
+
+        // front-facing rendering
+        glBegin(GL_TRIANGLES);
+        glNormal3fv(v1_n);
+        glVertex3fv(v1);
+        glNormal3fv(v2_n);
+        glVertex3fv(v2);
+        glNormal3fv(v3_n);
+        glVertex3fv(v3);
+        glEnd();
+
+        // clockwise winding for back-facing rendering
+        glBegin(GL_TRIANGLES);
+        glNormal3fv(-v1_n);
+        glVertex3fv(v1);
+        glNormal3fv(-v3_n);
+        glVertex3fv(v3);
+        glNormal3fv(-v2_n);
+        glVertex3fv(v2);
+        glEnd();
+    }
 }
