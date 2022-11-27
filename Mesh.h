@@ -19,34 +19,20 @@
 #include <GL/glut.h>
 #endif
 
-struct NewVertex {
-    // position
-    Vector3f Position;
-    // normal
-    Vector3f Normal;
-    // texCoords
-    Vector2f TexCoords;
-};
 class Mesh {
 public:
     Mesh();
-    // list of vertices from the OBJ file
-    // in the "bind pose"
-    std::vector<NewVertex> vertices;
-
-    // each face has 3 indices
-    // referencing 3 vertices
-    // This is the list of faces (indices into vecv and vecn)
-    std::vector<unsigned > faces;
 
     // This is the list of points (3D vectors)
     std::vector<Vector3f> vecv;
 
-// This is the list of normals (also 3D vectors)
+    // This is the list of normals (also 3D vectors)
     std::vector<Vector3f> vecn;
 
+    // This is the list of texture coordinates (also 3D vectors)
     std::vector<Vector2f> vect;
-// This is the list of faces (indices into vecv and vecn)
+
+    // This is the list of faces (indices into vecv and vecn)
     std::vector<std::vector<unsigned> > vecf;
 
 

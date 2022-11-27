@@ -10,17 +10,12 @@ Mesh::Mesh() {
 }
 void Mesh::load(const char* filename )
 {
-    // load() should populate bindVertices, vecv, and faces
 
     // Add your code here.
     //load the obj file
     std::ifstream ifile;
     ifile.open(filename,std::ios::in);
     char buffer[MAX_BUFFER_SIZE];
-/*    float xmin;
-    float xmax;
-    float ymin;
-    float ymax;*/
     while(ifile.getline(buffer,MAX_BUFFER_SIZE)){
         //change char to stringstream
         std::stringstream ss(buffer);
@@ -32,10 +27,6 @@ void Mesh::load(const char* filename )
             Vector3f v;
             //store the values separately
             ss >> v[0] >> v[1] >> v[2];
-/*            xmax = v[0]>xmax?v[0]:xmax;
-            xmin = v[0]<xmin?v[0]:xmin;
-            ymax = v[1]>ymax?v[1]:ymax;
-            ymin = v[1]<ymin?v[1]:ymin;*/
             vecv.push_back(v);
         } else if("vn" == s){
             Vector3f vn;

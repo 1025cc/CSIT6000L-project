@@ -15,7 +15,6 @@
 
 class ClothSystem : public ParticleSystem
 {
-    ///ADD MORE FUNCTION AND FIELDS HERE
 public:
     ClothSystem();
     ClothSystem(int width, int height, int systemState[]);
@@ -35,10 +34,10 @@ protected:
     //initial distance between particles
     float particleDistance = 0.3f;
     //some physical parameters
-    float dampling = 0.15f;
+    float dampling = 0.2f;
     Vector3f gravity = Vector3f(0.0f,-9.8f,0.0f);
     float mass = 0.04f;
-    float structuralStiffness =30.0f;
+    float structuralStiffness =25.0f;
     float structuralRestLength = particleDistance;
     float shearStiffness =20.0f;
     float shearRestLength = particleDistance * sqrt(2);
