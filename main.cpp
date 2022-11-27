@@ -44,7 +44,7 @@ namespace
 
     // seed the random number generator with the current time
     srand( time( NULL ) );
-    system = new ClothSystem(20,20,0);
+    system = new ClothSystem(20,20,systemState);
     timeStepper = new RKF45();
   }
 

@@ -16,7 +16,7 @@ class ClothSystem: public ParticleSystem
 ///ADD MORE FUNCTION AND FIELDS HERE
 public:
 	ClothSystem();
-    ClothSystem(int width,int height, int systemState);
+    ClothSystem(int width,int height, int systemState[]);
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	int indexOf(int i,int j);
 	float compareForce(float f, float friction);
