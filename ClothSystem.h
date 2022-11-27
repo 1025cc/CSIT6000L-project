@@ -19,6 +19,7 @@ public:
     ClothSystem(int width,int height, int systemState);
 	vector<Vector3f> evalF(vector<Vector3f> state);
 	int indexOf(int i,int j);
+	float compareForce(float f, float friction);
 	void draw();
     void move();
 
@@ -27,7 +28,7 @@ protected:
     //cloth size(particle nums)
     int width = 8;
     int height = 8;
-    int systemState = 0;//systemState: 0->fixed particles 1->the cloth falls 
+    int systemState = 0;//systemState: 0->fixed particles; 1->the cloth falls; 2-> add friction 
     //initial distance between particles
     float particleDistance = 0.3f;
     //some physical parameters
@@ -40,6 +41,7 @@ protected:
     float shearRestLength = particleDistance * sqrt(2);
     float flexStiffness =4.0f;
     float flexRestLength = particleDistance*2;
+    float frictionRate = 3.0f;
     //move
     float moveUpperBound = 2;
     float moveLowerBound = -2;
