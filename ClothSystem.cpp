@@ -261,13 +261,13 @@ void ClothSystem::draw()
 	//draw the ball
 	glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
 	glEnable(GL_COLOR_MATERIAL);
-	glColor3f(1.0f, 1.0f, 0.0f);
+	glColor3f(0.0f, 1.0f, 0.8f);
 	Vector3f ball = Vector3f(0, -0.1f * height, -0.5f*height);
 	float rad = 0.5f * particleDistance * width;
 	float epsilon = 0.125f;
 	glPushMatrix();
 	glTranslatef(ball.x(), ball.y(), ball.z());
-	glutSolidSphere(rad, 20.0f, 20.0f);
+	glutSolidSphere(rad, 40.0f, 40.0f);
 	glPopMatrix();
 	glDisable(GL_COLOR_MATERIAL);
 	for (int n = 0; n < m_numParticles; n++) {
