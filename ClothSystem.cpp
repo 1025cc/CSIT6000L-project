@@ -215,7 +215,7 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 				fNet.z() = compareForce(fNet.z(), frictionForce);
 			}
 			if (wind) {
-				fNet += Vector3f(0.0f, 0.0f, 1.0f * (rand()) / (static_cast <float> (RAND_MAX)));
+				fNet += Vector3f(0.0f, 0.0f, 2.0f * (rand()) / (static_cast <float> (RAND_MAX)));
 			}
 			Vector3f acceleration = fNet / mass;
 			f.push_back(velocity);
@@ -252,6 +252,9 @@ void ClothSystem::draw()
 	}
 
 	if(!wireframe){// display wireframe
+		glEnable(GL_COLOR_MATERIAL);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glDisable(GL_COLOR_MATERIAL);
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				//draw particle
@@ -267,7 +270,7 @@ void ClothSystem::draw()
 					glVertex3f(rightPos[0], rightPos[1] < groundHeight ? groundHeight : rightPos[1], rightPos[2]);
 				}
 				//not in the last row
-				else if (i < height - 1) {
+				if (i < height - 1) {
 					Vector3f bottomPos(m_vVecState[2 * indexOf(i + 1, j)]);
 					glVertex3f(pos[0], pos[1] < groundHeight ? groundHeight : pos[1], pos[2]);
 					glVertex3f(bottomPos[0], bottomPos[1] < groundHeight ? groundHeight : bottomPos[1], bottomPos[2]);
@@ -289,15 +292,15 @@ void ClothSystem::draw()
 				if (i > 0 && j > 0) {
 					normal += triangleNormal(m_vVecState[2 * indexOf(i, j - 1)], m_vVecState[2 * indexOf(i - 1, j)], m_vVecState[2 * indexOf(i, j)]);
 				}
-				else if (i < width - 1 && j > 0) {
+				if (i < width - 1 && j > 0) {
 					normal += triangleNormal(m_vVecState[2 * indexOf(i, j - 1)], m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i + 1, j - 1)]);
 					normal += triangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i + 1, j)], m_vVecState[2 * indexOf(i + 1, j - 1)]);
 				}
-				else if (i > 0 && j < height - 1) {
+				if (i > 0 && j < height - 1) {
 					normal += triangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i - 1, j)], m_vVecState[2 * indexOf(i - 1, j + 1)]);
 					normal += triangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i - 1, j + 1)], m_vVecState[2 * indexOf(i, j + 1)]);
 				}
-				else if (i < width - 1 && j < height - 1) {
+				if (i < width - 1 && j < height - 1) {
 					normal += triangleNormal(m_vVecState[2 * indexOf(i + 1, j)], m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i, j + 1)]);
 				}
 				normals[indexOf(i, j)] = normal.normalized();

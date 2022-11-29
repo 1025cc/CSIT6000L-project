@@ -47,7 +47,7 @@ protected:
     float frictionRate = 3.0f;
     //move
     float moveUpperBound = 2;
-    float moveLowerBound = -2;
+    float moveLowerBound = -14;
     Vector3f moveDir = (0, 0, 1);
     vector<bool> fixed_points;
 

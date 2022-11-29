@@ -193,6 +193,7 @@ namespace
             cout << "change move" << endl;
             break;
         case 'r':
+            move = false;
             systemState[0] = 0;
             systemState[1] = 0;
             systemState[2] = 0;
