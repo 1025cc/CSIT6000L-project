@@ -11,4 +11,8 @@ f: make the cloth fall without friction
 
 g: add friction
 
-(long press)1-6: change the position of the cloth
+w: add wind
+
+c: toggle wireframe 
+
+1-6: change the position of the cloth

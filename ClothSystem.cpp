@@ -97,7 +97,7 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			
-			//fix 2 particles - hang the cloth
+			//fix multiple particles - hang the cloth
 			if (systemState == 0) {
 				if (i == 0 && fixed_points[j]) {
 					f.push_back(Vector3f(0.0f));
@@ -215,7 +215,7 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 				fNet.z() = compareForce(fNet.z(), frictionForce);
 			}
 			if (wind) {
-				fNet += Vector3f(0.0f, 0.0f, 5.0f * (rand()) / (static_cast <float> (RAND_MAX)));
+				fNet += Vector3f(0.0f, 0.0f, 1.0f * (rand()) / (static_cast <float> (RAND_MAX)));
 			}
 			Vector3f acceleration = fNet / mass;
 			f.push_back(velocity);
@@ -227,35 +227,10 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 
 
 }
-Vector3f computeTriangleNormal(Vector3f v1, Vector3f v2, Vector3f v3) {
-	// v1, v2, v3 in counter-clockwise order, output the normal facing to the camera
+Vector3f triangleNormal(Vector3f v1, Vector3f v2, Vector3f v3) {
 	return Vector3f::cross(v2 - v1, v3 - v1).normalized();
 }
-void ClothSystem::computeVertexNormals() {
-	// Compute the normal vector (facing to the camera) of each vertex, by its adjcent triangles
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
-			Vector3f normal(0, 0, 0);
 
-			if (i > 0 && j > 0) {
-				normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j - 1)], m_vVecState[2 * indexOf(i - 1, j)], m_vVecState[2 * indexOf(i, j)]);
-			}
-			if (i < width - 1 && j > 0) {
-				normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j - 1)], m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i + 1, j - 1)]);
-				normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i + 1, j)], m_vVecState[2 * indexOf(i + 1, j - 1)]);
-			}
-			if (i > 0 && j < height - 1) {
-				normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i - 1, j)], m_vVecState[2 * indexOf(i - 1, j + 1)]);
-				normal += computeTriangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i - 1, j + 1)], m_vVecState[2 * indexOf(i, j + 1)]);
-			}
-			if (i < width - 1 && j < height - 1) {
-				normal += computeTriangleNormal(m_vVecState[2 * indexOf(i + 1, j)], m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i, j + 1)]);
-			}
-
-			normals[indexOf(i, j)] = normal.normalized();
-		}
-	}
-}
 void ClothSystem::draw()
 {
 	//draw the ball
@@ -276,7 +251,7 @@ void ClothSystem::draw()
 		}
 	}
 
-	if(!wireframe){
+	if(!wireframe){// display wireframe
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				//draw particle
@@ -292,7 +267,7 @@ void ClothSystem::draw()
 					glVertex3f(rightPos[0], rightPos[1] < groundHeight ? groundHeight : rightPos[1], rightPos[2]);
 				}
 				//not in the last row
-				if (i < height - 1) {
+				else if (i < height - 1) {
 					Vector3f bottomPos(m_vVecState[2 * indexOf(i + 1, j)]);
 					glVertex3f(pos[0], pos[1] < groundHeight ? groundHeight : pos[1], pos[2]);
 					glVertex3f(bottomPos[0], bottomPos[1] < groundHeight ? groundHeight : bottomPos[1], bottomPos[2]);
@@ -304,38 +279,61 @@ void ClothSystem::draw()
 	
 
 	else if(wireframe){
-		computeVertexNormals();
+		//compute vertex normals
+		glEnable(GL_COLOR_MATERIAL);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glDisable(GL_COLOR_MATERIAL);
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				Vector3f normal(0, 0, 0);
+				if (i > 0 && j > 0) {
+					normal += triangleNormal(m_vVecState[2 * indexOf(i, j - 1)], m_vVecState[2 * indexOf(i - 1, j)], m_vVecState[2 * indexOf(i, j)]);
+				}
+				else if (i < width - 1 && j > 0) {
+					normal += triangleNormal(m_vVecState[2 * indexOf(i, j - 1)], m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i + 1, j - 1)]);
+					normal += triangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i + 1, j)], m_vVecState[2 * indexOf(i + 1, j - 1)]);
+				}
+				else if (i > 0 && j < height - 1) {
+					normal += triangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i - 1, j)], m_vVecState[2 * indexOf(i - 1, j + 1)]);
+					normal += triangleNormal(m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i - 1, j + 1)], m_vVecState[2 * indexOf(i, j + 1)]);
+				}
+				else if (i < width - 1 && j < height - 1) {
+					normal += triangleNormal(m_vVecState[2 * indexOf(i + 1, j)], m_vVecState[2 * indexOf(i, j)], m_vVecState[2 * indexOf(i, j + 1)]);
+				}
+				normals[indexOf(i, j)] = normal.normalized();
+			}
+		}
+
+		//draw triangles 
 		for (size_t i = 0; i < this->faces.size(); i++) {
 			Vector3f face = faces[i];
 
-			// counter-clockwise order
-			Vector3f v1 = m_vVecState[2 * ((int)face[0])];
-			Vector3f v2 = m_vVecState[2 * ((int)face[1])];
-			Vector3f v3 = m_vVecState[2 * ((int)face[2])];
-			Vector3f v1_n = this->normals[(int)face[0]];
-			Vector3f v2_n = this->normals[(int)face[1]];
-			Vector3f v3_n = this->normals[(int)face[2]];
+			Vector3f Va = m_vVecState[2 * ((int)face[0])];
+			Vector3f Vb = m_vVecState[2 * ((int)face[1])];
+			Vector3f Vc = m_vVecState[2 * ((int)face[2])];
+			Vector3f NorVa = this->normals[(int)face[0]];
+			Vector3f NorVb = this->normals[(int)face[1]];
+			Vector3f NorVc = this->normals[(int)face[2]];
 
-			// front-facing rendering
 			glBegin(GL_TRIANGLES);
-			glNormal3fv(v1_n);
-			glVertex3fv(v1);
-			glNormal3fv(v2_n);
-			glVertex3fv(v2);
-			glNormal3fv(v3_n);
-			glVertex3fv(v3);
-			glEnd();
+			glNormal3fv(NorVa);
+			glVertex3fv(Va);
+			glNormal3fv(NorVb);
+			glVertex3fv(Vb);
+			glNormal3fv(NorVc);
+			glVertex3fv(Vc);
+			glEnd();//front side
 
-			// clockwise winding for back-facing rendering
 			glBegin(GL_TRIANGLES);
-			glNormal3fv(-v1_n);
-			glVertex3fv(v1);
-			glNormal3fv(-v3_n);
-			glVertex3fv(v3);
-			glNormal3fv(-v2_n);
-			glVertex3fv(v2);
-			glEnd();
+			glNormal3fv(-NorVa);
+			glVertex3fv(Va);
+			glNormal3fv(-NorVc);
+			glVertex3fv(Vc);
+			glNormal3fv(-NorVb);
+			glVertex3fv(Vb);
+			glEnd();//back side
 		}
 	}
 	
 }
+

@@ -194,6 +194,9 @@ namespace
             break;
         case 'r':
             systemState[0] = 0;
+            systemState[1] = 0;
+            systemState[2] = 0;
+            systemState[3] = 0;
             system = new ClothSystem(20, 20, systemState);
             cout << "reset" << endl;
             break;

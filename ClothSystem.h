@@ -24,7 +24,6 @@ public:
     float compareForce(float f, float friction);
     void draw();
     void move();
-    void computeVertexNormals();
     vector<Vector3f> normals;
     vector<Vector3f> faces;
 
