@@ -216,7 +216,7 @@ namespace
             cout << "add friction" << endl;
             break;
         case 'w':
-            system->wind = !(system->wind);
+            system->wind +=1;
             cout << "add wind" << endl;
             break;
         case '1':

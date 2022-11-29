@@ -25,7 +25,7 @@ public:
 
 	virtual void draw() = 0;
 
-	bool wind;
+	int wind;
 	bool wireframe;
 
 protected:

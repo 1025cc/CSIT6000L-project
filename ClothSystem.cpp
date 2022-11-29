@@ -3,7 +3,7 @@
 
 ClothSystem::ClothSystem(int width, int height, int systemState[])
 {
-	this->wind = false;
+	this->wind = 0;
 	this->wireframe = true;
 	this->width = width;
 	this->height = height;
@@ -94,6 +94,7 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 	Vector3f ball = Vector3f(0, -0.25f * height, 0);
 	float epsilon = 0.125f;
 	float rad = 0.5f * particleDistance * width;
+	float windforce = 0.5f;
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			
@@ -214,8 +215,11 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 				fNet.y() = compareForce(fNet.y(), frictionForce);
 				fNet.z() = compareForce(fNet.z(), frictionForce);
 			}
-			if (wind) {
-				fNet += Vector3f(0.0f, 0.0f, 2.0f * (rand()) / (static_cast <float> (RAND_MAX)));
+			if (wind%3!=0) {
+				if (wind % 3 == 2) {
+					windforce = 2.0f;
+				}
+				fNet += Vector3f(0.0f, 0.0f, windforce * (rand()) / (static_cast <float> (RAND_MAX)));
 			}
 			Vector3f acceleration = fNet / mass;
 			f.push_back(velocity);
