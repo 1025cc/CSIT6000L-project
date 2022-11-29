@@ -11,4 +11,4 @@ f: make the cloth fall without friction
 
 g: add friction
 
-1-6: change the position of the cloth
+(long press)1-6: change the position of the cloth
