@@ -6,7 +6,7 @@
 #ifdef _WIN32
 #include "GL/freeglut.h"
 #else
-#include <GL/glut.h>
+#include <GLUT/glut.h>
 #endif
 
 #include "particleSystem.h"
@@ -35,12 +35,12 @@ protected:
     //initial distance between particles
     float particleDistance = 0.3f;
     //some physical parameters
-    float dampling = 0.1f;
-    Vector3f gravity = Vector3f(0.0f, -9.8f, 0.0f);
+    float dampling = 0.15f;
+    Vector3f gravity = Vector3f(0.0f,-9.8f,0.0f);
     float mass = 0.04f;
-    float structuralStiffness = 25.0f;
+    float structuralStiffness =30.0f;
     float structuralRestLength = particleDistance;
-    float shearStiffness = 15.0f;
+    float shearStiffness =20.0f;
     float shearRestLength = particleDistance * sqrt(2);
     float flexStiffness = 4.0f;
     float flexRestLength = particleDistance * 2;

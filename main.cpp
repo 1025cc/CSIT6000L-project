@@ -17,11 +17,8 @@
 #include "camera.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
 ///TODO: include more headers if necessary
-
 #include "TimeStepper.hpp"
-#include "simpleSystem.h"
 #include "ClothSystem.h"
 #include "Mesh.h"
 using namespace std;
@@ -42,15 +39,43 @@ namespace
     //second value of light positon. default:1.0
     float pos2 = 7.0f;
     int systemState[] = { 0,0,0,0 };
+    //time step size
+    float h = 0.04f;
     // initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
-    void initSystem(int argc, char* argv[])
-    {
-
+	void initSystem(int argc, char * argv[])
+	{
+        //choose time integrator
+        if(argc >1 && argv[1]!=NULL){
+            char *odeSolver = argv[1];
+            switch (odeSolver[0]) {
+                case 'e':
+                    timeStepper = new ForwardEuler();
+                    break;
+                case 't':
+                    timeStepper = new Trapzoidal();
+                    break;
+                case 'r':
+                    timeStepper = new RK4();
+                    break;
+                case 'f':
+                    timeStepper = new RKF45();
+                    break;
+                default:
+                    timeStepper = new RK4();
+            }
+        } else{
+            timeStepper = new RK4();
+        }
+        //time step size
+        if(argc > 2 && argv[2]!=NULL){
+            h = atof(argv[2]);
+        } else{
+            h = 0.04f;
+        }
         // seed the random number generator with the current time
         srand(time(NULL));
         system = new ClothSystem(20, 20, systemState);
-        timeStepper = new RK4();
     }
 
     // Take a step forward for the particle shower
@@ -59,7 +84,6 @@ namespace
     void stepSystem()
     {
         ///TODO The stepsize should change according to commandline arguments
-        const float h = 0.04f;
         if (timeStepper != 0) {
             timeStepper->takeStep(system, h);
         }
@@ -456,7 +480,7 @@ int main(int argc, char* argv[])
     camera.SetDistance(30);
     camera.SetCenter(Vector3f::ZERO);
 
-    glutCreateWindow("Assignment 4");
+    glutCreateWindow("Cloth Simulation");
 
     // Initialize OpenGL parameters.
     initRendering();

@@ -98,13 +98,12 @@ void RKF45::takeStep(ParticleSystem *particleSystem, float stepSize) {
     if(step == 0){
         step = stepSize;
     }
-    float tolerance = 0.001f;
-    float stepMin = 0.04f;
+    float tolerance = 0.01f;
     std::vector<Vector3f> state = particleSystem->getState();
     size_t stateSize = state.size();
     bool stopAdapting = false;
     std::vector<Vector3f> newState;
-    while(!stopAdapting){
+    do {
         // k1 = h*f(tk,xk)
         std::vector<Vector3f> k1 = particleSystem->evalF(state);
         for (size_t i = 0; i < stateSize; ++i) {
@@ -176,16 +175,12 @@ void RKF45::takeStep(ParticleSystem *particleSystem, float stepSize) {
         if(maxError > tolerance){
             float scale = 0.84 * pow((tolerance * step)/(maxError), 0.25);
             step = scale * step;
-            if(step<stepMin){
-                step = stepMin;
-                stopAdapting = true;
-                newState = xRKF4;
-            }
         } else{
             stopAdapting = true;
             newState = xRKF4;
         }
-    }
+    }while(!stopAdapting);
+    cout<<"step = "<<step<<endl;
     particleSystem->setState(newState);
 }
 
