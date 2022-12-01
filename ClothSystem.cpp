@@ -91,7 +91,7 @@ vector<Vector3f> ClothSystem::evalF(vector<Vector3f> state)
 	vector<Vector3f> f;
 	//gravity force is constant->m*g
 	Vector3f fGravity = mass * gravity;
-	Vector3f ball = Vector3f(0, -0.25f * height, 0);
+	Vector3f ball = Vector3f(0, -0.1f * height, -0.5f*height);
 	float epsilon = 0.125f;
 	float rad = 0.5f * particleDistance * width;
 	float windforce = 0.5f;
